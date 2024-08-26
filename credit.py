@@ -1,6 +1,31 @@
 import streamlit as st
 import pandas as pd
 
+# CSS pour ajuster les marges latérales et maximiser la largeur
+st.markdown(
+    """
+    <style>
+    /* Réduit les marges latérales du conteneur principal et applique des marges négatives */
+    .main .block-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-top: -60px !important;
+        margin-left: -50px !important; /* Ajuste selon tes besoins */
+        margin-right: -50px !important; /* Ajuste selon tes besoins */
+    }
+
+    /* Ajuste le conteneur de la section de données pour utiliser 100% de la largeur */
+    .stDataFrame {
+        width: calc(100% + 80px) !important; /* Ajuste pour compenser les marges négatives */
+        margin-left: -50px !important; /* Ajuste selon tes besoins */
+        margin-right: -50px !important; /* Ajuste selon tes besoins */
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 def calcul_interets_totaux(capital, taux_credit, duree):
     # Convertir la durée en mois
     n = duree * 12
