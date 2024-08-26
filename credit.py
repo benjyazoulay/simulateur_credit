@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-
+st.set_page_config(page_title="Simulateur de crédit", page_icon="💶", layout="wide")
 # CSS pour ajuster les marges latérales et maximiser la largeur
 st.markdown(
     """
@@ -41,7 +41,7 @@ def calcul_interets_totaux(capital, taux_credit, duree):
     
     return interets_totaux
 
-st.title("Simulateur de crédit")
+st.title("💶Simulateur de crédit")
 
 with st.sidebar:
     col1, col2 = st.columns(2)
