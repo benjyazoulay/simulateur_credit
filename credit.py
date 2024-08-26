@@ -2,6 +2,21 @@ import streamlit as st
 import pandas as pd
 st.set_page_config(page_title="Simulateur de crédit", page_icon="💶", layout="wide")
 
+# CSS pour ajuster les marges latérales et maximiser la largeur
+st.markdown(
+    """
+    <style>
+    /* Réduit les marges latérales du conteneur principal et applique des marges négatives */
+    .main .block-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-top: -30px !important;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 def calcul_interets_totaux(capital, taux_credit, duree):
     # Convertir la durée en mois
