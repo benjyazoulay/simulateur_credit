@@ -8,8 +8,8 @@ st.markdown(
     <style>
     /* Réduit les marges latérales du conteneur principal et applique des marges négatives */
     .main .block-container {
-        padding-left: 0.5 !important;
-        padding-right: 0.5 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         margin-top: -60px !important;
     }
 
