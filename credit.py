@@ -29,7 +29,7 @@ else:
         'inflation_annuelle': 1.7,
         'nb_parts': 2,
         'taux_assurance': 0.127,
-        'frais_agence': 0
+        'frais_agence': 5
     }
 
 #st.title("💶 Simulateur de crédit")
@@ -56,7 +56,7 @@ with st.sidebar:
         logement_neuf = st.selectbox("Type de logement", ["Ancien", "Neuf"], index=["Ancien", "Neuf"].index(state['logement_neuf']))
 
     with col2:
-        montant_bien = st.number_input("Montant du bien (hors frais d'agence)", value=state['montant_bien'])
+        montant_bien = st.number_input("Montant du bien (avec frais d'agence)", value=state['montant_bien'])
 
     col1, col2 = st.columns(2)
 
@@ -143,7 +143,11 @@ def calcul_interets_totaux(capital, taux_credit, duree):
 # Création du tableau
 df = pd.DataFrame(columns=["Poste", "Montant", "Poste2", "Montant2"])
 
-df.loc[1] = ["Montant du bien (hors frais d'agence)", montant_bien,"Apport initial",apport_initial]
+montant_bien_hors_frais_agence = montant_bien / (1 + frais_agence)
+total_frais_agence = montant_bien - montant_bien_hors_frais_agence
+montant_bien_avec_frais_agence = montant_bien
+montant_bien = montant_bien_hors_frais_agence
+df.loc[1] = ["Montant du bien (avec frais d'agence)", montant_bien,"Apport initial",apport_initial]
 # Ajout de la première ligne
 if logement_neuf == "Ancien":
     frais_acquisition = montant_bien * 0.07
@@ -152,8 +156,8 @@ else:
     frais_acquisition = montant_bien * 0.03
     df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
 
-total_frais_agence = frais_agence * montant_bien
-df.loc[3] = ["Frais d'agence", total_frais_agence,"Montant du bien avec frais d'agence", montant_bien + total_frais_agence]
+
+df.loc[3] = ["Frais d'agence", total_frais_agence,"Montant du bien sans frais d'agence", montant_bien_hors_frais_agence]
 
 reste_emprunt = montant_bien + frais_acquisition + total_frais_agence - apport_initial - ptz
 total_emprunt = reste_emprunt + ptz
