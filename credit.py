@@ -5,7 +5,15 @@ import json
 
 st.set_page_config(page_title="Simulateur de crédit", page_icon="💶", layout="wide")
 
-# Fonctions d'encodage et de décodage d'état (déjà définies)
+# Function to encode state to URL
+def encode_state(state):
+    json_string = json.dumps(state)
+    return base64.urlsafe_b64encode(json_string.encode()).decode()
+
+# Function to decode state from URL
+def decode_state(encoded_state):
+    json_string = base64.urlsafe_b64decode(encoded_state.encode()).decode()
+    return json.loads(json_string)
 
 # Récupération de l'état de l'URL
 if 'state' in st.experimental_get_query_params():
