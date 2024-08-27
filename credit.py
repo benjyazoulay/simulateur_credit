@@ -87,16 +87,19 @@ else:
     df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
 
 reste_emprunt = montant_bien + frais_acquisition - apport_initial - ptz
+total_emprunt = reste_emprunt + ptz
+total_assurance = duree*(reste_emprunt + ptz)*taux_assurance
 interets = calcul_interets_totaux(reste_emprunt, taux_credit, duree)
 df.loc[3] = ["Montant à emprunter (hors PTZ)", reste_emprunt,"Montant total des intérêts", interets]
+df.loc[4] = ["Montant total à emprunter (avec PTZ)", total_emprunt,"Assurance emprunteur", total_assurance]
 
 cout_total = montant_bien + frais_acquisition + interets + duree*(reste_emprunt + ptz)*taux_assurance
 cout_total_credit = ptz + reste_emprunt + interets + duree*(reste_emprunt + ptz)*taux_assurance
-df.loc[4] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
+df.loc[5] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
 
 
-mensualite = (cout_total_credit + duree*(reste_emprunt + ptz)*taux_assurance) / (12 * duree)
-annualite = (cout_total_credit + duree*(reste_emprunt + ptz)*taux_assurance) / duree
+mensualite = (cout_total_credit + total_assurance) / (12 * duree)
+annualite = (cout_total_credit + total_assurance) / duree
 df.loc[6] = ["Mensualités", mensualite, "Mensualités/pers.",mensualite/2]
 df.loc[7] = ["Annualités", annualite,"Inflation annuelle projetée",f"{format(inflation_annuelle*100,',.2f')}%"]
 
