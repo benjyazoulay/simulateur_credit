@@ -79,7 +79,7 @@ with st.sidebar:
 # Création du tableau
 df = pd.DataFrame(columns=["Poste", "Montant", "Poste2", "Montant2"])
 
-df.loc[1] = ["Montant du bien", montant_bien,"Apport initial",apport_initial]
+df.loc[1] = ["Montant du bien (hors frais d'agence)", montant_bien,"Apport initial",apport_initial]
 # Ajout de la première ligne
 if logement_neuf == "Ancien":
     frais_acquisition = montant_bien * 0.07
@@ -89,7 +89,7 @@ else:
     df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
 
 total_frais_agence = frais_agence * montant_bien
-df.loc[3] = ["Frais d'agence", total_frais_agence,"", ""]
+df.loc[3] = ["Frais d'agence", total_frais_agence,"Montant du bien avec frais d'agence", montant_bien + total_frais_agence]
 
 reste_emprunt = montant_bien + frais_acquisition + frais_agence - apport_initial - ptz
 total_emprunt = reste_emprunt + ptz
