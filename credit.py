@@ -47,7 +47,7 @@ with st.sidebar:
     col1, col2 = st.columns(2)
 
     with col1:
-        apport_initial = st.number_input("Apport initial", value=70000)
+        apport_initial = st.number_input("Apport initial", value=80000)
 
     with col2:
         taux_credit = st.number_input("Taux du crédit (%)", value=3.39) / 100
@@ -55,7 +55,7 @@ with st.sidebar:
     col1, col2 = st.columns(2)
 
     with col1:
-        ptz = st.number_input("Prêt à taux zéro", value=0)
+        ptz = st.number_input("Prêt à taux zéro", value=30000)
 
     with col2:
         duree = st.number_input("Durée du crédit (années)", value=20)
