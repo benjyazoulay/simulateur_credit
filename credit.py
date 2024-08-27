@@ -1,6 +1,87 @@
 import streamlit as st
 import pandas as pd
+import base64
+import json
+
 st.set_page_config(page_title="Simulateur de crédit", page_icon="💶", layout="wide")
+
+# Fonctions d'encodage et de décodage d'état (déjà définies)
+
+# Récupération de l'état de l'URL
+if 'state' in st.experimental_get_query_params():
+    state = decode_state(st.experimental_get_query_params()['state'][0])
+else:
+    state = {
+        'logement_neuf': "Ancien",
+        'montant_bien': 350000,
+        'apport_initial': 80000,
+        'taux_credit': 3.39,
+        'ptz': 30000,
+        'duree': 20,
+        'inflation_annuelle': 1.7,
+        'nb_parts': 2,
+        'taux_assurance': 0.127,
+        'frais_agence': 4.87
+    }
+
+st.title("💶 Simulateur de crédit")
+
+with st.sidebar:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        logement_neuf = st.selectbox("Type de logement", ["Ancien", "Neuf"], index=["Ancien", "Neuf"].index(state['logement_neuf']))
+
+    with col2:
+        montant_bien = st.number_input("Montant du bien (hors frais d'agence)", value=state['montant_bien'])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        apport_initial = st.number_input("Apport initial", value=state['apport_initial'])
+
+    with col2:
+        taux_credit = st.number_input("Taux du crédit (%)", value=state['taux_credit']) / 100
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        ptz = st.number_input("Prêt à taux zéro", value=state['ptz'])
+
+    with col2:
+        duree = st.number_input("Durée du crédit (années)", value=state['duree'])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        inflation_annuelle = st.number_input("Inflation annuelle projetée (%)", value=state['inflation_annuelle']) / 100
+    with col2:
+        nb_parts = st.number_input("Nombre d'emprunteurs", value=state['nb_parts'])
+        
+    col1, col2 = st.columns(2)
+
+    with col1:
+        taux_assurance = st.number_input("Taux de l'assurance emprunteur (%)", value=state['taux_assurance']) / 100
+    with col2:
+        frais_agence = st.number_input("Frais d'agence (%)", value=state['frais_agence']) / 100
+
+# Mise à jour de l'état avec les valeurs actuelles
+current_state = {
+    'logement_neuf': logement_neuf,
+    'montant_bien': montant_bien,
+    'apport_initial': apport_initial,
+    'taux_credit': taux_credit * 100,  # Conversion pour le stockage
+    'ptz': ptz,
+    'duree': duree,
+    'inflation_annuelle': inflation_annuelle * 100,  # Conversion pour le stockage
+    'nb_parts': nb_parts,
+    'taux_assurance': taux_assurance * 100,  # Conversion pour le stockage
+    'frais_agence': frais_agence * 100  # Conversion pour le stockage
+}
+
+# Encodage de l'état dans l'URL
+encoded_state = encode_state(current_state)
+st.experimental_set_query_params(state=encoded_state)
 
 # CSS pour ajuster les marges latérales et maximiser la largeur
 st.markdown(
@@ -33,46 +114,6 @@ def calcul_interets_totaux(capital, taux_credit, duree):
     
     return interets_totaux
 
-st.title("💶Simulateur de crédit")
-
-with st.sidebar:
-    col1, col2 = st.columns(2)
-
-    with col1:
-        logement_neuf = st.selectbox("Type de logement", ["Ancien", "Neuf"])
-
-    with col2:
-        montant_bien = st.number_input("Montant du bien (hors frais d'agence)", value=350000)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        apport_initial = st.number_input("Apport initial", value=80000)
-
-    with col2:
-        taux_credit = st.number_input("Taux du crédit (%)", value=3.39) / 100
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        ptz = st.number_input("Prêt à taux zéro", value=30000)
-
-    with col2:
-        duree = st.number_input("Durée du crédit (années)", value=20)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        inflation_annuelle = st.number_input("Inflation annuelle projetée (%)", value=1.7) / 100
-    with col2:
-        nb_parts = st.number_input("Nombre d'emprunteurs", value=2)
-        
-    col1, col2 = st.columns(2)
-
-    with col1:
-        taux_assurance = st.number_input("Taux de l'assurance emprunteur (%)", value=0.127) / 100
-    with col2:
-        frais_agence = st.number_input("Frais d'agence (%)", value=4.87) / 100
 
 
 
