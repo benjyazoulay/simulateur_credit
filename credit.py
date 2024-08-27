@@ -147,7 +147,7 @@ montant_bien_hors_frais_agence = montant_bien / (1 + frais_agence)
 total_frais_agence = montant_bien - montant_bien_hors_frais_agence
 montant_bien_avec_frais_agence = montant_bien
 montant_bien = montant_bien_hors_frais_agence
-df.loc[1] = ["Montant du bien (avec frais d'agence)", montant_bien,"Apport initial",apport_initial]
+df.loc[1] = ["Montant du bien (avec frais d'agence)", montant_bien_avec_frais_agence,"Apport initial",apport_initial]
 # Ajout de la première ligne
 if logement_neuf == "Ancien":
     frais_acquisition = montant_bien * 0.07
