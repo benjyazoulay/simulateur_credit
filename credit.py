@@ -42,7 +42,7 @@ with st.sidebar:
         logement_neuf = st.selectbox("Type de logement", ["Ancien", "Neuf"])
 
     with col2:
-        montant_bien = st.number_input("Montant du bien", value=350000)
+        montant_bien = st.number_input("Montant du bien (hors frais d'agence)", value=350000)
 
     col1, col2 = st.columns(2)
 
@@ -71,6 +71,8 @@ with st.sidebar:
 
     with col1:
         taux_assurance = st.number_input("Taux de l'assurance emprunteur (%)", value=0.127) / 100
+    with col2:
+        frais_agence = st.number_input("Frais d'agence (%)", value=4.87) / 100
 
 
 
@@ -86,25 +88,28 @@ else:
     frais_acquisition = montant_bien * 0.03
     df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
 
-reste_emprunt = montant_bien + frais_acquisition - apport_initial - ptz
+total_frais_agence = frais_agence * montant_bien
+df.loc[3] = ["Frais d'agence", total_frais_agence,"", ""]
+
+reste_emprunt = montant_bien + frais_acquisition + frais_agence - apport_initial - ptz
 total_emprunt = reste_emprunt + ptz
 total_assurance = duree*(reste_emprunt + ptz)*taux_assurance
 interets = calcul_interets_totaux(reste_emprunt, taux_credit, duree)
-df.loc[3] = ["Montant à emprunter (hors PTZ)", reste_emprunt,"Montant total des intérêts", interets]
-df.loc[4] = ["Montant total à emprunter (avec PTZ)", total_emprunt,"Assurance emprunteur", total_assurance]
+df.loc[4] = ["Montant à emprunter (hors PTZ)", reste_emprunt,"Montant total des intérêts", interets]
+df.loc[5] = ["Montant total à emprunter (avec PTZ)", total_emprunt,"Assurance emprunteur", total_assurance]
 
 cout_total = montant_bien + frais_acquisition + interets + duree*(reste_emprunt + ptz)*taux_assurance
 cout_total_credit = ptz + reste_emprunt + interets + duree*(reste_emprunt + ptz)*taux_assurance
-df.loc[5] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
+df.loc[6] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
 
 
 mensualite = (cout_total_credit + total_assurance) / (12 * duree)
 annualite = (cout_total_credit + total_assurance) / duree
-df.loc[6] = ["Mensualités", mensualite, "Mensualités/pers.",mensualite/2]
-df.loc[7] = ["Annualités", annualite,"Inflation annuelle projetée",f"{format(inflation_annuelle*100,',.2f')}%"]
+df.loc[7] = ["Mensualités", mensualite, "Mensualités/pers.",mensualite/2]
+df.loc[8] = ["Annualités", annualite,"Inflation annuelle projetée",f"{format(inflation_annuelle*100,',.2f')}%"]
 
 cout_reel = sum(annualite / ((1 + inflation_annuelle) ** n) for n in range(1, duree + 1))
-df.loc[8] = ["Coût réel du crédit (inflation déduite)", cout_reel,"Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
+df.loc[9] = ["Coût réel du crédit (inflation déduite)", cout_reel,"Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
 
 # Formatage de la colonne Montant
 df['Montant'] = df['Montant'].apply(lambda x: format(x, ',.0f').replace(',',' ') +'€')
