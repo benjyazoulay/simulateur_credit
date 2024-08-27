@@ -32,7 +32,22 @@ else:
         'frais_agence': 4.87
     }
 
-st.title("💶 Simulateur de crédit")
+#st.title("💶 Simulateur de crédit")
+st.markdown("""
+    <style>
+    /* Style spécifique pour les mobiles */
+    @media only screen and (max-width: 600px) {
+        h1 {
+            text-align: center; /* Centre le texte */
+        }
+    }
+    </style>
+    <h1> 
+        <a href="https://simulateur-credit.streamlit.app/" target="_self" style="color: inherit; text-decoration: none;">
+            💶 Simulateur de crédit
+        </a> 
+    </h1>
+    """, unsafe_allow_html=True)
 
 with st.sidebar:
     col1, col2 = st.columns(2)
