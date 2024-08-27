@@ -91,7 +91,7 @@ else:
 total_frais_agence = frais_agence * montant_bien
 df.loc[3] = ["Frais d'agence", total_frais_agence,"Montant du bien avec frais d'agence", montant_bien + total_frais_agence]
 
-reste_emprunt = montant_bien + frais_acquisition + frais_agence - apport_initial - ptz
+reste_emprunt = montant_bien + frais_acquisition + total_frais_agence - apport_initial - ptz
 total_emprunt = reste_emprunt + ptz
 total_assurance = duree*(reste_emprunt + ptz)*taux_assurance
 interets = calcul_interets_totaux(reste_emprunt, taux_credit, duree)
