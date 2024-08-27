@@ -166,8 +166,8 @@ interets = calcul_interets_totaux(reste_emprunt, taux_credit, duree)
 df.loc[4] = ["Montant à emprunter (hors PTZ)", reste_emprunt,"Montant total des intérêts", interets]
 df.loc[5] = ["Montant total à emprunter (avec PTZ)", total_emprunt,"Assurance emprunteur", total_assurance]
 
-cout_total = montant_bien + frais_acquisition + interets + duree*(reste_emprunt + ptz)*taux_assurance
-cout_total_credit = ptz + reste_emprunt + interets + duree*(reste_emprunt + ptz)*taux_assurance
+cout_total = montant_bien_avec_frais_agence + frais_acquisition + interets + total_assurance
+cout_total_credit = ptz + reste_emprunt + interets + total_assurance
 df.loc[6] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
 
 
