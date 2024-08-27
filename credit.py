@@ -29,7 +29,7 @@ else:
         'inflation_annuelle': 1.7,
         'nb_parts': 2,
         'taux_assurance': 0.127,
-        'frais_agence': 4.87
+        'frais_agence': 0
     }
 
 #st.title("💶 Simulateur de crédit")
