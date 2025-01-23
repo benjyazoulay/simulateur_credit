@@ -58,7 +58,10 @@ with st.sidebar:
     with col2:
         montant_bien = st.number_input("Montant du bien (avec frais d'agence)", value=state['montant_bien'])
 
-    montant_travaux = st.number_input("Montant des travaux", value=state['montant_travaux'])
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        montant_travaux = st.number_input("Montant des travaux", value=state['montant_travaux'])
 
     col1, col2 = st.columns(2)
 
