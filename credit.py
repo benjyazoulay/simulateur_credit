@@ -21,18 +21,18 @@ if 'state' in st.experimental_get_query_params():
 else:
     state = {
         'logement_neuf': "Ancien",
-        'montant_bien': 350000,
-        'apport_initial': 80000,
-        'taux_credit': 3.39,
-        'ptz': 30000,
+        'montant_bien': 380000,
+        'montant_travaux': 50000,
+        'apport_initial': 70000,
+        'taux_credit': 3.25,
+        'ptz': 0,
         'duree': 20,
         'inflation_annuelle': 1.7,
         'nb_parts': 2,
         'taux_assurance': 0.127,
-        'frais_agence': 5
+        'frais_agence': 4
     }
 
-#st.title("💶 Simulateur de crédit")
 st.markdown("""
     <style>
     /* Style spécifique pour les mobiles */
@@ -57,6 +57,8 @@ with st.sidebar:
 
     with col2:
         montant_bien = st.number_input("Montant du bien (avec frais d'agence)", value=state['montant_bien'])
+
+    montant_travaux = st.number_input("Montant des travaux", value=state['montant_travaux'])
 
     col1, col2 = st.columns(2)
 
@@ -92,6 +94,7 @@ with st.sidebar:
 current_state = {
     'logement_neuf': logement_neuf,
     'montant_bien': montant_bien,
+    'montant_travaux': montant_travaux,
     'apport_initial': apport_initial,
     'taux_credit': taux_credit * 100,  # Conversion pour le stockage
     'ptz': ptz,
@@ -137,51 +140,46 @@ def calcul_interets_totaux(capital, taux_credit, duree):
     
     return interets_totaux
 
-
-
-
 # Création du tableau
 df = pd.DataFrame(columns=["Poste", "Montant", "Poste2", "Montant2"])
 
 montant_bien_hors_frais_agence = montant_bien / (1 + frais_agence)
 total_frais_agence = montant_bien - montant_bien_hors_frais_agence
-montant_bien_avec_frais_agence = montant_bien
-montant_bien = montant_bien_hors_frais_agence
-df.loc[1] = ["Montant du bien (avec frais d'agence)", montant_bien_avec_frais_agence,"Apport initial",apport_initial]
+montant_total = montant_bien + montant_travaux
+df.loc[1] = ["Montant du bien (avec frais d'agence)", montant_bien, "Montant des travaux", montant_travaux]
+
 # Ajout de la première ligne
 if logement_neuf == "Ancien":
-    frais_acquisition = montant_bien * 0.07
-    df.loc[2] = ["Frais d'acquisition Ancien 7%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
+    frais_acquisition = montant_bien_hors_frais_agence * 0.07
+    df.loc[2] = ["Frais d'acquisition Ancien 7%", frais_acquisition, f"Durée du crédit : {duree} ans", f"Taux : {format(taux_credit*100,',.2f')}%"]
 else:
-    frais_acquisition = montant_bien * 0.03
-    df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition,f"Durée du crédit : {duree} ans",f"Taux : {format(taux_credit*100,',.2f')}%"]
+    frais_acquisition = montant_bien_hors_frais_agence * 0.03
+    df.loc[2] = ["Frais d'acquisition Neuf 3%", frais_acquisition, f"Durée du crédit : {duree} ans", f"Taux : {format(taux_credit*100,',.2f')}%"]
 
+df.loc[3] = ["Frais d'agence", total_frais_agence, "Montant du bien sans frais d'agence", montant_bien_hors_frais_agence]
 
-df.loc[3] = ["Frais d'agence", total_frais_agence,"Montant du bien sans frais d'agence", montant_bien_hors_frais_agence]
-
-reste_emprunt = montant_bien + frais_acquisition + total_frais_agence - apport_initial - ptz
+reste_emprunt = montant_total + frais_acquisition + total_frais_agence - apport_initial - ptz
 total_emprunt = reste_emprunt + ptz
-total_assurance = duree*(reste_emprunt + ptz)*taux_assurance
+total_assurance = duree * (reste_emprunt + ptz) * taux_assurance
 interets = calcul_interets_totaux(reste_emprunt, taux_credit, duree)
-df.loc[4] = ["Montant à emprunter (hors PTZ)", reste_emprunt,"Montant total des intérêts", interets]
-df.loc[5] = ["Montant total à emprunter (avec PTZ)", total_emprunt,"Assurance emprunteur", total_assurance]
+df.loc[4] = ["Montant à emprunter (hors PTZ)", reste_emprunt, "Montant total des intérêts", interets]
+df.loc[5] = ["Montant total à emprunter (avec PTZ)", total_emprunt, "Assurance emprunteur", total_assurance]
 
-cout_total = montant_bien_avec_frais_agence + frais_acquisition + interets + total_assurance
+cout_total = montant_total + frais_acquisition + interets + total_assurance
 cout_total_credit = ptz + reste_emprunt + interets + total_assurance
-df.loc[6] = ["Coût total de l'opération", cout_total,"Coût total du crédit assuré", cout_total_credit]
-
+df.loc[6] = ["Coût total de l'opération", cout_total, "Coût total du crédit assuré", cout_total_credit]
 
 mensualite = (cout_total_credit + total_assurance) / (12 * duree)
 annualite = (cout_total_credit + total_assurance) / duree
-df.loc[7] = ["Mensualités", mensualite, "Mensualités/pers.",mensualite/2]
-df.loc[8] = ["Annualités", annualite,"Inflation annuelle projetée",f"{format(inflation_annuelle*100,',.2f')}%"]
+df.loc[7] = ["Mensualités", mensualite, "Mensualités/pers.", mensualite/2]
+df.loc[8] = ["Annualités", annualite, "Inflation annuelle projetée", f"{format(inflation_annuelle*100,',.2f')}%"]
 
 cout_reel = sum(annualite / ((1 + inflation_annuelle) ** n) for n in range(1, duree + 1))
-df.loc[9] = ["Coût réel du crédit (inflation déduite)", cout_reel,"Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
+df.loc[9] = ["Coût réel du crédit (inflation déduite)", cout_reel, "Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
 
 # Formatage de la colonne Montant
-df['Montant'] = df['Montant'].apply(lambda x: format(x, ',.0f').replace(',',' ') +'€')
-df['Montant2'] = df['Montant2'].apply(lambda x: format(x, ',.0f').replace(',',' ') +'€' if isinstance(x, (int, float)) else x)
+df['Montant'] = df['Montant'].apply(lambda x: format(x, ',.0f').replace(',', ' ') + '€')
+df['Montant2'] = df['Montant2'].apply(lambda x: format(x, ',.0f').replace(',', ' ') + '€' if isinstance(x, (int, float)) else x)
 
-df.columns = ["1","2","3","4"]
-st.dataframe(df, use_container_width=True,hide_index=True)
+df.columns = ["1", "2", "3", "4"]
+st.dataframe(df, use_container_width=True, hide_index=True)
