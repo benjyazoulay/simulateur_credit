@@ -33,7 +33,8 @@ state_defaults = {
     'inflation_annuelle': 1.7,
     'nb_parts': 2,
     'taux_assurance': 0.127,
-    'frais_agence': 4
+    'frais_agence': 4,
+    'revenu': 5250
 }
 
 state = {key: state.get(key, default) for key, default in state_defaults.items()}
@@ -67,6 +68,8 @@ with st.sidebar:
     
     with col1:
         montant_travaux = st.number_input("Montant des travaux", value=state['montant_travaux'])
+    with col2:
+        revenu = st.number_input("Revenus du ménage", value=state['revenu'])
 
     col1, col2 = st.columns(2)
 
@@ -110,7 +113,8 @@ current_state = {
     'inflation_annuelle': inflation_annuelle * 100,  # Conversion pour le stockage
     'nb_parts': nb_parts,
     'taux_assurance': taux_assurance * 100,  # Conversion pour le stockage
-    'frais_agence': frais_agence * 100  # Conversion pour le stockage
+    'frais_agence': frais_agence * 100,  # Conversion pour le stockage
+    'revenu': revenu
 }
 
 # Encodage de l'état dans l'URL
@@ -183,7 +187,9 @@ df.loc[7] = ["Mensualités", mensualite, "Mensualités/pers.", mensualite/2]
 df.loc[8] = ["Annualités", annualite, "Inflation annuelle projetée", f"{format(inflation_annuelle*100,',.2f')}%"]
 
 cout_reel = sum(annualite / ((1 + inflation_annuelle) ** n) for n in range(1, duree + 1))
+endettement = mensualite / revenu
 df.loc[9] = ["Coût réel du crédit (inflation déduite)", cout_reel, "Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
+df.loc[10] = ["Taux d'endettement", f"{format(endettement*100,',.2f')}%"]
 
 # Formatage de la colonne Montant
 df['Montant'] = df['Montant'].apply(lambda x: format(x, ',.0f').replace(',', ' ') + '€')
