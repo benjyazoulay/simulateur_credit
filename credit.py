@@ -189,11 +189,15 @@ df.loc[8] = ["Annualités", annualite, "Inflation annuelle projetée", f"{format
 cout_reel = sum(annualite / ((1 + inflation_annuelle) ** n) for n in range(1, duree + 1))
 endettement = mensualite / revenu
 df.loc[9] = ["Coût réel du crédit (inflation déduite)", cout_reel, "Surcoût réel du crédit (coût réel - montant emprunté)", cout_reel - (reste_emprunt + ptz)]
-df.loc[10] = ["Taux d'endettement", f"{format(endettement*100,',.2f')}%", "", 0]
+df.loc[10] = ["Taux d'endettement", f"{format(endettement*100,',.2f')}%", "", ""]
 
-# Formatage de la colonne Montant
-df['Montant'] = df['Montant'].apply(lambda x: format(x, ',.0f').replace(',', ' ') + '€')
-df['Montant2'] = df['Montant2'].apply(lambda x: format(x, ',.0f').replace(',', ' ') + '€' if isinstance(x, (int, float)) else x)
+def format_currency(value):
+    if isinstance(value, (int, float)):
+        return f"{value:,.0f}€".replace(",", " ")
+    return value  # Return original value if not a number
+
+df['Montant'] = df['Montant'].apply(format_currency)
+df['Montant2'] = df['Montant2'].apply(format_currency)
 
 df.columns = ["1", "2", "3", "4"]
 st.dataframe(df, use_container_width=True, hide_index=True)
